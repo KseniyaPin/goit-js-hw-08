@@ -1,77 +1,42 @@
 'use strict';
 
 import throttle from 'lodash.throttle';
-
-const feedbackForm = document.querySelector('.feedback-form');
+// var throttled = require('lodash.throttle');
 
 // створюємо ключ keyLogin, за яким ми будемо отримувати значення, наш обєкт з поштою та повідомленням
 const keyLogin = 'feedback-form-state';
 
 // Дістаємо дані зі сховища і заповнюєио Input, якщо воно непорожнє, тобто true
-const data = JSON.parse(localStorage.getItem(keyLogin));
+const dataStorage = JSON.parse(localStorage.getItem(keyLogin));
 
-// feedbackForm.addEventListener('input', onFormInput);
+const feedbackForm = document.querySelector('.feedback-form');
 
-if (JSON.parse(localStorage.getItem(keyLogin))) {
-  feedbackForm.elements.email.disabled = true;
-  feedbackForm.elements.message.disabled = true;
+feedbackForm.addEventListener('input', throttle(onFormInput, 500));
 
-  feedbackForm.elements.email.value = data.email;
-  feedbackForm.elements.message.value = data.message;
+if (dataStorage) {
+  feedbackForm.elements.email.value = dataStorage.email;
+  feedbackForm.elements.message.value = dataStorage.message;
 }
-//
 
-// =================================================================
-// ДЛЯ INPUT - - - - -
-// =================================================================
-feedbackForm.addEventListener('input', onFormInput);
+// ДЛЯ INPUT - - - - -----------
 
-function onFormInput(evt) {
-  // забороняємо перезавантаження сторінки
-  evt.preventDefault();
-
-  // створюємо об'єкт для введених даних з форми
-  const dateUser = {
+function onFormInput() {
+  const form = {
     email: feedbackForm.elements.email.value,
     message: feedbackForm.elements.message.value,
   };
 
-  console.log('dateUser=', dateUser);
+  // створюємо об'єкт для введених даних з форми
+  const dataUser = {
+    email: form.email,
+    message: form.message,
+  };
 
   // записуємо дані у сховище
-  localStorage.setItem(keyLogin, JSON.stringify(dateUser));
-
-  feedbackForm.elements.email.disabled = true;
-  feedbackForm.elements.message.disabled = true;
+  localStorage.setItem(keyLogin, JSON.stringify(dataUser));
 }
 
-// ===  З Тротлом ==========================================
-// let throttled = throttle(onFormInput, 50000);
-// feedbackForm.addEventListener('input', throttled);
-
-// function onFormInput(evt) {
-//   // забороняємо перезавантаження сторінки
-//   evt.preventDefault();
-
-//   // створюємо об'єкт для введених даних з форми
-//   const dateUser = {
-//     email: feedbackForm.elements.email.value,
-//     message: feedbackForm.elements.message.value,
-//   };
-
-//   console.log('dateUser=', dateUser);
-
-//   // записуємо дані у сховище
-//   localStorage.setItem(keyLogin, JSON.stringify(dateUser));
-
-//   feedbackForm.elements.email.disabled = true;
-//   feedbackForm.elements.message.disabled = true;
-// }
-// ======================================= З Тротлом ====
-
-// =================================================================
 // ДЛЯ SUBMIT - - - - - - - - - -
-// =================================================================
 
 feedbackForm.addEventListener('submit', onFormSubmit);
 
@@ -79,13 +44,16 @@ function onFormSubmit(evt) {
   // забороняємо перезавантаження сторінки
   evt.preventDefault();
 
+  console.log(JSON.parse(localStorage.getItem(keyLogin)));
+
   // беремо дані зі сховища, щоб очистити їх
   if (JSON.parse(localStorage.getItem(keyLogin))) {
-    feedbackForm.elements.email.disabled = false;
-    feedbackForm.elements.message.disabled = false;
+    JSON.parse(localStorage.getItem(keyLogin)).email = '';
+    JSON.parse(localStorage.getItem(keyLogin)).message = '';
 
     //   видалити з локального сховища
     localStorage.removeItem(keyLogin);
+
     //   очистити форму
     feedbackForm.reset();
     return;
