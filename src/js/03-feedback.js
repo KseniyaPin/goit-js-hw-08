@@ -20,13 +20,7 @@ if (JSON.parse(localStorage.getItem(keyLogin))) {
   feedbackForm.elements.message.value = data.message;
 }
 //
-// створюємо об'єкт для введених даних з форми
-const dateUser = {
-  email: feedbackForm.elements.email.value,
-  message: feedbackForm.elements.message.value,
-};
 
-console.log('dateUser=', dateUser);
 // =================================================================
 // ДЛЯ INPUT - - - - -
 // =================================================================
@@ -35,6 +29,14 @@ feedbackForm.addEventListener('input', onFormInput);
 function onFormInput(evt) {
   // забороняємо перезавантаження сторінки
   evt.preventDefault();
+
+  // створюємо об'єкт для введених даних з форми
+  const dateUser = {
+    email: feedbackForm.elements.email.value,
+    message: feedbackForm.elements.message.value,
+  };
+
+  console.log('dateUser=', dateUser);
 
   // записуємо дані у сховище
   localStorage.setItem(keyLogin, JSON.stringify(dateUser));
